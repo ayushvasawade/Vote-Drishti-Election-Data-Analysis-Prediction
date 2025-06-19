@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Winner Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Utility Styles */
+        .candidate-card, .result-card {
+            border: 1px solid #CBD5E1;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            background-color: #F9FAFB;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .candidate-header {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            color: #1E293B;
+        }
+        label {
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #CBD5E1;
+            border-radius: 0.375rem;
+            background-color: #fff;
+            color: #1E293B;
+            margin-bottom: 1rem;
+            transition: border 0.2s ease;
+        }
+        input:focus, select:focus {
+            border-color: #3B82F6;
+            outline: none;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 0.6rem 1.4rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary {
+            background-color: #3B82F6;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+        .btn-secondary {
+            background-color: #64748B;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+        
+        /* Result Highlights */
+        .winner {
+            color: #16A34A;
+            font-weight: bold;
+        }
+        .loser {
+            color: #DC2626;
+            font-weight: bold;
+        }
+        
+        /* Navbar */
+        .navbar {
+            
+            color: #1E293B;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+           
+           
+
+        }
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            padding: 0;
+        }
+        .nav-links li a {
+            color: #1E293B;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .nav-links li a:hover {
+            color: #3B82F6;
+        }
+        
+        /* Responsive Nav */
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                margin-top: 1rem;
+                gap: 1rem;
+            }
+        }
+        
+        /* Home Section */
+        .home-section {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            text-align: center;
+        }
+        .bg-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+          
+            background: rgba(30, 41, 59, 0.6);
+            z-index: -1;
+            align-items: center;
+            justify-content: center;
+           
+        }
+        .home-content h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+        }
+        .home-content p {
+            font-size: 2rem;
+            font-weight: 400;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Glowing Gradient Animation */
+        .overlay h1 {
+            font-size: 9rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fef5e7, #38512f , #fef5e7 , #38512f);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: floatingGradient 6s ease infinite;
+            margin-top: 20%;
+        }
+        @keyframes floatingGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        </style>
+        
+</head>
+<body class="bg-gray-100 font-sans">
+<!-- Navbar HTML -->
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="logo">ElectionPredictor</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Prediction</a></li>
+        </ul>
+    </div>
+</nav>
+<!-- Home Section -->
+<section class="home-section">
+    <video autoplay muted loop class="bg-video">
+        <source src="static/3825913-hd_1920_1080_25fps.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="overlay">
+
+    <div class="home-content">
+        <h1>Vote Dṛṣṭi</h1>
+        <p>See the Future of the candidate</p>
+    </div>
+</div>
+</section>
+
+    <div class="results-section" style="margin-top: 100px;">
+        <h2 class="text-3xl font-bold mb-6 text-gray-700 text-center">Model Evaluation Results</h2>
+    
+        <div class="flex flex-wrap justify-center gap-6">
+            <div class="w-full md:w-1/3">
+                <h3 class="text-2xl font-semibold text-gray-800 text-center mb-2">Confusion Matrix</h3>
+                <img src="/static/confusion_matrix.png" alt="Confusion Matrix" class="w-full h-auto rounded shadow">
+            </div>
+            <div class="w-full md:w-1/3">
+                <h3 class="text-2xl font-semibold text-gray-800 text-center mb-2">ROC Curve</h3>
+                <img src="/static/roc_curve.png" alt="ROC Curve" class="w-full h-auto rounded shadow">
+            </div>
+            <div class="w-full md:w-1/3">
+                <h3 class="text-2xl font-semibold text-gray-800 text-center mb-2">Feature Importance</h3>
+                <img src="/static/feature_importance.png" alt="Feature Importance" class="w-full h-auto rounded shadow">
+            </div>
+        </div>
+    </div>
+    
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Indian Election Winner Prediction</h1>
+
+        <div id="candidates-container">
+            </div>
+
+        <div class="flex justify-between mt-4 mb-6">
+            <button id="add-candidate" class="btn-secondary">Add Another Candidate</button>
+            <button id="predict" class="btn-primary">Predict Winners</button>
+        </div>
+
+         <div id="results" class="mt-6">
+            <h2 class="text-2xl font-semibold mb-3 text-gray-700">Prediction Results:</h2>
+            <div id="results-content">
+                <p class="text-gray-500">Click "Predict Winners" to see the results.</p>
+            </div>
+            <div id="error-message" class="mt-4 text-red-600 font-medium"></div>
+        </div>
+    </div>
+
+    <template id="candidate-template">
+        <div class="candidate-card">
+             <div class="candidate-header">Candidate <span class="candidate-number"></span></div>
+             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 <div>
+                    <label for="STATE">State:</label>
+                    <select name="STATE" required>
+                        <option value="">Select State</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="NCT OF Delhi">NCT OF Delhi</option>
+                        </select>
+                 </div>
+                 <div>
+                    <label for="PARTY">Party:</label>
+                     <select name="PARTY" required>
+                        <option value="">Select Party</option>
+                        <option value="BJP">BJP</option>
+                        <option value="INC">INC</option>
+                        <option value="AITC">AITC</option>
+                        <option value="BSP">BSP</option>
+                        <option value="SP">SP</option>
+                        <option value="SHS">SHS</option>
+                        <option value="DMK">DMK</option>
+                        <option value="YSRCP">YSRCP</option>
+                        <option value="JD(U)">JD(U)</option>
+                        <option value="BJD">BJD</option>
+                        <option value="TRS">TRS</option>
+                        <option value="CPI(M)">CPI(M)</option>
+                        <option value="TDP">TDP</option>
+                        <option value="NCP">NCP</option>
+                        <option value="AAP">AAP</option>
+                        <option value="IND">IND (Independent)</option>
+                        <option value="Other">Other</option>
+                        </select>
+                 </div>
+                 <div>
+                    <label for="GENDER">Gender:</label>
+                    <select name="GENDER" required>
+                        <option value="">Select Gender</option>
+                        <option value="MALE">MALE</option>
+                        <option value="FEMALE">FEMALE</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label for="CRIMINALCASES">Criminal Cases:</label>
+                    <input type="number" name="CRIMINALCASES" min="0" value="0" required>
+                 </div>
+                 <div>
+                    <label for="AGE">Age:</label>
+                    <input type="number" name="AGE" min="18" max="120" value="50" required>
+                 </div>
+                 <div>
+                    <label for="CATEGORY">Category:</label>
+                     <select name="CATEGORY" required>
+                        <option value="">Select Category</option>
+                        <option value="GENERAL">GENERAL</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label for="EDUCATION">Education:</label>
+                     <select name="EDUCATION" required>
+                        <option value="">Select Education</option>
+                        <option value="Post Graduate">Post Graduate</option>
+                        <option value="Graduate">Graduate</option>
+                        <option value="12th Pass">12th Pass</option>
+                        <option value="10th Pass">10th Pass</option>
+                        <option value="Doctorate">Doctorate</option>
+                        <option value="8th Pass">8th Pass</option>
+                        <option value="Others">Others</option>
+                        <option value="Illiterate">Illiterate</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label for="ASSETS">Assets (INR):</label>
+                    <input type="number" name="ASSETS" min="0" value="1000000" step="10000" required>
+                 </div>
+                 <div>
+                    <label for="LIABILITIES">Liabilities (INR):</label>
+                    <input type="number" name="LIABILITIES" min="0" value="100000" step="1000" required>
+                 </div>
+                 <div>
+                    <label for="TOTAL ELECTORS">Total Electors in Constituency:</label>
+                    <input type="number" name="TOTAL ELECTORS" min="1000" value="1500000" step="1000" required>
+                 </div>
+             </div>
+        </div>
+    </template>
+
+    <script>
+        const candidatesContainer = document.getElementById('candidates-container');
+        const addCandidateButton = document.getElementById('add-candidate');
+        const predictButton = document.getElementById('predict');
+        const resultsContent = document.getElementById('results-content');
+        const errorMessageDiv = document.getElementById('error-message');
+        const candidateTemplate = document.getElementById('candidate-template');
+        let candidateCount = 0;
+
+        function addCandidateSection() {
+            candidateCount++;
+            const templateContent = candidateTemplate.content.cloneNode(true);
+            const candidateCard = templateContent.querySelector('.candidate-card');
+            candidateCard.querySelector('.candidate-number').textContent = candidateCount;
+
+            // Set unique IDs/names for inputs if needed for specific targeting, though collecting by class/name works
+            // Example: candidateCard.querySelectorAll('input, select').forEach(el => el.name += `_${candidateCount}`);
+
+            candidatesContainer.appendChild(templateContent);
+        }
+
+        async function handlePrediction() {
+            errorMessageDiv.textContent = ''; // Clear previous errors
+            resultsContent.innerHTML = '<p class="text-gray-500">Getting predictions...</p>'; // Show loading state
+
+            const candidateCards = candidatesContainer.querySelectorAll('.candidate-card');
+            const candidatesData = [];
+            let formValid = true;
+
+            candidateCards.forEach((card, index) => {
+                const candidate = {};
+                const inputs = card.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (!input.value && input.hasAttribute('required')) {
+                        formValid = false;
+                        input.style.borderColor = 'red'; // Highlight missing fields
+                    } else {
+                         input.style.borderColor = '#cbd5e0'; // Reset border
+                    }
+                    // Convert number inputs to numbers
+                    candidate[input.name] = input.type === 'number' ? parseFloat(input.value) || 0 : input.value;
+                });
+                 if (Object.keys(candidate).length > 0) { // Only add if card has data
+                    candidatesData.push(candidate);
+                 }
+            });
+
+             if (!formValid) {
+                 errorMessageDiv.textContent = 'Please fill in all required fields for each candidate.';
+                 resultsContent.innerHTML = '<p class="text-gray-500">Prediction failed. Check inputs.</p>';
+                 return;
+             }
+              if (candidatesData.length === 0) {
+                 errorMessageDiv.textContent = 'Please add at least one candidate.';
+                 resultsContent.innerHTML = '';
+                 return;
+             }
+
+
+            try {
+                // Send data to Flask backend
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(candidatesData), // Send the array of candidate objects
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const results = await response.json();
+
+                // Display results
+                displayResults(results, candidatesData); // Pass original data for display context
+
+            } catch (error) {
+                console.error('Prediction error:', error);
+                errorMessageDiv.textContent = `Error: ${error.message}`;
+                resultsContent.innerHTML = '<p class="text-gray-500">Prediction failed.</p>';
+            }
+        }
+
+         function displayResults(predictions, originalInputs) {
+            resultsContent.innerHTML = ''; // Clear previous results or loading message
+
+            // Sort predictions by Probability_Win (descending) to find the most likely winner
+            const sortedResults = Object.values(predictions).sort((a, b) =>
+                (b['Probability_Win (Class 1)'] || 0) - (a['Probability_Win (Class 1)'] || 0)
+            );
+
+             if (sortedResults.length === 0) {
+                 resultsContent.innerHTML = '<p class="text-gray-500">No prediction results received.</p>';
+                 return;
+             }
+
+            // Determine the overall winner (highest probability if available, otherwise first predicted winner)
+            let overallWinnerIndex = -1;
+            if (sortedResults[0]['Probability_Win (Class 1)'] !== undefined && sortedResults[0]['Probability_Win (Class 1)'] !== null) {
+                 // Find the original index of the candidate with the highest probability
+                 const topCandidate = sortedResults[0];
+                 overallWinnerIndex = Object.keys(predictions).find(key => predictions[key] === topCandidate);
+            } else {
+                 // Fallback if probabilities aren't there: find the first predicted winner
+                 overallWinnerIndex = Object.keys(predictions).find(key => predictions[key]['PREDICTED_WINNER (0=Loss, 1=Win)'] === 1);
+            }
+
+
+            Object.entries(predictions).forEach(([index, result]) => {
+                const card = document.createElement('div');
+                card.className = 'result-card mb-4';
+
+                const predictedWinner = result['PREDICTED_WINNER (0=Loss, 1=Win)'];
+                const winProbability = result['Probability_Win (Class 1)'];
+
+                let statusClass = predictedWinner === 1 ? 'winner' : 'loser';
+                let statusText = predictedWinner === 1 ? 'Predicted Winner' : 'Predicted Loser';
+
+                // Highlight the overall winner
+                let winnerHighlight = index === overallWinnerIndex && predictedWinner === 1 ? ' (Most Likely Winner)' : '';
+                 if (index === overallWinnerIndex && predictedWinner === 0 && sortedResults.length > 1 && sortedResults[0]['PREDICTED_WINNER (0=Loss, 1=Win)'] === 0) {
+                     winnerHighlight = ' (No Predicted Winner)'; // Indicate if top probability is still a loss
+                 }
+
+
+                card.innerHTML = `
+                    <h3 class="text-xl font-semibold mb-2">Candidate ${parseInt(index) + 1} (${result['PARTY']} - ${result['STATE']})</h3>
+                    <p><strong>Prediction:</strong> <span class="${statusClass}">${statusText}${winnerHighlight}</span></p>
+                    ${winProbability !== undefined && winProbability !== null ?
+                        `<p><strong>Probability of Winning:</strong> ${(winProbability * 100).toFixed(1)}%</p>` :
+                        '<p>Probability data not available.</p>'
+                    }
+                    <details class="mt-2 text-sm text-gray-600">
+                        <summary class="cursor-pointer font-medium text-blue-600 hover:text-blue-800">Show Details</summary>
+                        <ul class="list-disc list-inside mt-1">
+                            <li>Gender: ${result['GENDER']}</li>
+                            <li>Age: ${result['AGE']}</li>
+                            <li>Category: ${result['CATEGORY']}</li>
+                            <li>Education: ${result['EDUCATION']}</li>
+                            <li>Criminal Cases: ${result['CRIMINALCASES']}</li>
+                            <li>Assets: ₹${result['ASSETS']?.toLocaleString('en-IN') ?? 'N/A'}</li>
+                            <li>Liabilities: ₹${result['LIABILITIES']?.toLocaleString('en-IN') ?? 'N/A'}</li>
+                            <li>Total Electors: ${result['TOTAL ELECTORS']?.toLocaleString('en-IN') ?? 'N/A'}</li>
+                        </ul>
+                    </details>
+                `;
+                 if (index === overallWinnerIndex && predictedWinner === 1) {
+                     card.style.borderColor = '#38a169'; // Green border for winner
+                     card.style.borderWidth = '2px';
+                 }
+
+                resultsContent.appendChild(card);
+            });
+        }
+
+        // Add initial two candidate sections
+        addCandidateSection();
+        addCandidateSection();
+
+        // Add event listeners
+        addCandidateButton.addEventListener('click', addCandidateSection);
+        predictButton.addEventListener('click', handlePrediction);
+
+    </script>
+</body>
+</html>

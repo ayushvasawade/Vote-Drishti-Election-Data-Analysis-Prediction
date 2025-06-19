@@ -1,0 +1,12 @@
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+imbalanced-learn
+xgboost
+# Optional libraries (commented out as they might require separate installation or caused issues in the original notebook):
+# plotly
+# chart-studio
+# catboost
+# lightgbm
